@@ -1,2 +1,2 @@
-# vque-authentication-server-remote
+# vque-authentication-server
 authentication server for the virtual queueing system
