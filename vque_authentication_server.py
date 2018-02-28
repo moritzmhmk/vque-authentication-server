@@ -36,7 +36,8 @@ class AuthenticationServer(object):
         token = self._basic_auth(environ.get('HTTP_AUTHORIZATION'))
         headers = [
             ('Access-Control-Allow-Origin', '*'),  # TODO set correct origin
-            ('Access-Control-Allow-Methods', 'GET')
+            ('Access-Control-Allow-Methods', 'GET'),
+            ('Access-Control-Allow-Headers', 'Authorization')
         ]
         if environ['REQUEST_METHOD'].lower() == 'options':  # CORS preflight request
             status = '200 OK'
