@@ -34,10 +34,17 @@ class AuthenticationServer(object):
 
     def application(self, environ, start_response):
         token = self._basic_auth(environ.get('HTTP_AUTHORIZATION'))
-
+        headers = [
+            ('Access-Control-Allow-Origin', '*'),  # TODO set correct origin
+            ('Access-Control-Allow-Methods', 'GET')
+        ]
+        if environ['REQUEST_METHOD'].lower() == 'options':  # CORS preflight request
+            status = '200 OK'
+            start_response(status, headers)
+            return []
         if token is None:
             status = '401 Unauthorized'
-            headers = [
+            headers += [
                 ('Content-type', 'text/plain; charset=utf-8'),
                 ('WWW-Authenticate', 'Basic realm="Login Required"')
             ]
@@ -45,6 +52,6 @@ class AuthenticationServer(object):
             return ['401 Unauthorized'.encode('utf-8')]
         else:
             status = '200 OK'
-            headers = [('Content-type', 'application/jwt; charset=utf-8')]
+            headers += [('Content-type', 'application/jwt; charset=utf-8')]
             start_response(status, headers)
             return [token]
