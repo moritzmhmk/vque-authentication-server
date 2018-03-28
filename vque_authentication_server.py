@@ -32,7 +32,7 @@ class AuthenticationServer(object):
         encoded = jwt.encode(payload, self.private_key, algorithm='RS256')
         return encoded
 
-    def application(self, environ, start_response):
+    def __call__(self, environ, start_response):
         token = self._basic_auth(environ.get('HTTP_AUTHORIZATION'))
 
         if token is None:
