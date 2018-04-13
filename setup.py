@@ -1,3 +1,8 @@
+"""Basic auth server for Virtual Queue Project.
+
+This is the setup file.
+"""
+
 from setuptools import setup
 
 version = '0.0.2'

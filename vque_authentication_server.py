@@ -1,16 +1,23 @@
+"""Basic auth server for Virtual Queue Project."""
+
 from base64 import b64decode
 import jwt
 import datetime
 
 
 class AuthenticationServer(object):
+    """Class creates a server that is callable."""
+
     def __init__(self):
+        """Initialisation."""
         self.private_key = None  # needs to be set by subclass
 
     def authenticate(self, username, password):
-        """authenticate username with password
+        """Authenticate username with password.
+
         returns:
-            - on success: dict with keys ['id', 'role', 'lastname', 'firstname', 'title']
+            - on success: dict with keys ['id', 'role', 'lastname',
+                'firstname', 'title']
             - on failure: None
         """
         raise NotImplementedError()
@@ -22,17 +29,25 @@ class AuthenticationServer(object):
         if scheme.lower() != 'basic':
             return
         username, password = b64decode(data.encode('utf8')).split(b':', 1)
-        payload = self.authenticate(username.decode('utf8'), password.decode('utf8'))
+        payload = self.authenticate(
+            username.decode('utf8'),
+            password.decode('utf8')
+        )
         if payload is None:
             return
         payload_keyset = set(('id', 'role', 'lastname', 'firstname', 'title'))
         if not payload_keyset == payload.keys():
-            raise KeyError('expected dict with keys "{}" but found "{}"'.format(payload_keyset, set(payload.keys())))
-        payload['exp'] = datetime.datetime.utcnow() + datetime.timedelta(days=3)
+            raise KeyError(
+                'expected dict with keys "{}" but found "{}"'.format(
+                    payload_keyset, set(payload.keys()))
+            )
+        payload['exp'] = datetime.datetime.utcnow() + datetime.timedelta(
+            days=3)
         encoded = jwt.encode(payload, self.private_key, algorithm='RS256')
         return encoded
 
     def __call__(self, environ, start_response):
+        """Make server callable."""
         token = self._basic_auth(environ.get('HTTP_AUTHORIZATION'))
 
         if token is None:
