@@ -24,7 +24,8 @@ class AuthenticationServer(object):
 
     def _basic_auth(self, auth):
         if not auth:
-            raise Exception("Missing AUTHORIZATION header")
+            print("Missing AUTHORIZATION header")
+            return
         scheme, data = auth.split(None, 1)
         if scheme.lower() != 'basic':
             raise Exception("Unsupported authorization scheme: {}".format(scheme.lower()))
