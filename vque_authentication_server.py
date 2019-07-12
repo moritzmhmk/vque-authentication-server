@@ -22,7 +22,8 @@ class AuthenticationServer(object):
         """
         raise NotImplementedError()
 
-    def _basic_auth(self, auth):
+    def _basic_auth(self, environ):
+        auth = environ.get('HTTP_AUTHORIZATION')
         if not auth:
             print("Missing AUTHORIZATION header")
             return
@@ -32,7 +33,8 @@ class AuthenticationServer(object):
         username, password = b64decode(data.encode('utf8')).split(b':', 1)
         payload = self.authenticate(
             username.decode('utf8'),
-            password.decode('utf8')
+            password.decode('utf8'),
+            environ
         )
         if payload is None:
             return
@@ -49,7 +51,7 @@ class AuthenticationServer(object):
 
     def __call__(self, environ, start_response):
         """Make server callable."""
-        token = self._basic_auth(environ.get('HTTP_AUTHORIZATION'))
+        token = self._basic_auth(environ)
 
         if token is None:
             status = '401 Unauthorized'
