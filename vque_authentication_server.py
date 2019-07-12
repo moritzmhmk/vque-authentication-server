@@ -24,10 +24,10 @@ class AuthenticationServer(object):
 
     def _basic_auth(self, auth):
         if not auth:
-            return
+            raise Exception("Missing AUTHORIZATION header")
         scheme, data = auth.split(None, 1)
         if scheme.lower() != 'basic':
-            return
+            raise Exception("Unsupported authorization scheme: {}".format(scheme.lower()))
         username, password = b64decode(data.encode('utf8')).split(b':', 1)
         payload = self.authenticate(
             username.decode('utf8'),
